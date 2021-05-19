@@ -27,7 +27,7 @@ jobs:
           fallback: 1 # Opt
       - name: Generate Next Tag
         id: nexttag
-        run: echo "::set-output name=tag::$((steps.previoustag.outputs.tag + 1))"
+        run: echo "::set-output name=tag::${{steps.previoustag.outputs.tag}}"
       - name: Generate Release
         uses: softprops/action-gh-release@v1
         with:
