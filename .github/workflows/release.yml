@@ -24,10 +24,12 @@ jobs:
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
         with:
-          fallback: 1 # Opt
+          fallback: 0 # Opt
       - name: Generate Next Tag
         id: nexttag
-        run: echo "::set-output name=tag::$((${{steps.previoustag.outputs.tag}} + 1))"
+        env:
+          prev: ${{ steps.previoustag.outputs.tag }}
+        run: echo "::set-output name=tag::$(($prev + 1))"
       - name: Generate Release
         uses: softprops/action-gh-release@v1
         with:
