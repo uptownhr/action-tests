@@ -7,7 +7,7 @@ on:
   #types: [ completed ]
   pull_request:
     branches:
-      - main
+      - master
 
 env:
   NPM_TOKEN_GITHUB: ${{ secrets.NPM_TOKEN_GITHUB }}
