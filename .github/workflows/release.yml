@@ -46,24 +46,3 @@ jobs:
           echo "TESTING----- ${GITHUB_REF##*/}"
           echo "${{ steps.previoustag.outputs.tag }}"
         id: extract_branch
-      - name: Build, tag, and push image to Amazon ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: payroll-service
-        run: |
-          docker build \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} \
-            --build-arg NPM_TOKEN_GITHUB=$NPM_TOKEN_GITHUB \
-            --build-arg SENTRY_RELEASE=${{ github.event.release.tag_name }} .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
-      - uses: ravsamhq/notify-slack-action@master
-        if: always()
-        with:
-          status: ${{ job.status }}
-          notify_when: 'failure' # default is 'success,failure,warnings'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATION_WEBHOOK }} # required
