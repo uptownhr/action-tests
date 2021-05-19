@@ -13,9 +13,34 @@ env:
   NPM_TOKEN_GITHUB: ${{ secrets.NPM_TOKEN_GITHUB }}
 
 jobs:
+  create_tag:
+    name: create tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{steps.nexttag.outputs.tag}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1 # Opt
+      - name: Generate Next Tag
+        id: nexttag
+        run: echo "::set-output name=tag::$(($steps.previoustag + 1))"
+      - name: Generate Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
+          tag_name: ${{steps.nexttag.outputs.tag}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish_container_image:
     name: run image build for Production
     runs-on: ubuntu-latest
+    needs: create_tag
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out the repo
